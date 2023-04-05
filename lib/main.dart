@@ -30,17 +30,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   int _selectedIndex = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values.
-      _counter++;
-    });
-  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -54,39 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 35),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const <Widget>[
-              Icon(Icons.note_add_rounded, size: 100, color: Colors.blueGrey),
-              SizedBox(height: 15),
-              TextField(
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'User',
-                ),
-              ),
-              SizedBox(height: 15),
-              TextField(
-                textAlign: TextAlign.center,
-                obscureText: true,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Password',
-                ),
-              ),
-              SizedBox(height: 15),
-              ElevatedButton(
-                onPressed: null,
-                child: Text('Login'),
-              ),
-            ],
-          ),
-        ),
-      ),
+      body: const SignIn(),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -106,11 +64,57 @@ class _MyHomePageState extends State<MyHomePage> {
         selectedItemColor: Colors.blueAccent[300],
         onTap: _onItemTapped,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+      floatingActionButton: const FloatingActionButton(
+        onPressed: null,
         tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class SignIn extends StatelessWidget {
+
+  
+
+  const SignIn({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 35),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const <Widget>[
+            Icon(Icons.note_add_rounded, size: 100, color: Colors.blueGrey),
+            SizedBox(height: 15),
+            TextField(
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'User',
+              ),
+            ),
+            SizedBox(height: 15),
+            TextField(
+              textAlign: TextAlign.center,
+              obscureText: true,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Password',
+              ),
+            ),
+            SizedBox(height: 15),
+            ElevatedButton(
+              onPressed: null,
+              child: Text('Login'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
