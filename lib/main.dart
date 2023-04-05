@@ -1,3 +1,4 @@
+import 'package:first_app/login.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -7,23 +8,23 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Notas App',
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
       ),
-      home: const MyHomePage(title: 'App de Notas'),
+      home: const LogIn(title: "Notas App - Log In"),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key, required this.email, required this.title});
 
   final String title;
+  final String email;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -44,7 +45,20 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: const SignIn(),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Icon(Icons.note_add_rounded,
+                size: 100, color: Colors.blueGrey),
+            const SizedBox(height: 15),
+            Text(
+              'Welcome ${widget.email}',
+              style: Theme.of(context).textTheme.headline4,
+            ),
+          ],
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -64,55 +78,124 @@ class _MyHomePageState extends State<MyHomePage> {
         selectedItemColor: Colors.blueAccent[300],
         onTap: _onItemTapped,
       ),
-      floatingActionButton: const FloatingActionButton(
-        onPressed: null,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
     );
   }
 }
 
-class SignIn extends StatelessWidget {
+class LogIn extends StatefulWidget {
+  const LogIn({super.key, required this.title});
 
-  
+  final String title;
 
-  const SignIn({
-    super.key,
-  });
+  @override
+  State<LogIn> createState() => _LogInState();
+}
+
+class _LogInState extends State<LogIn> {
+  final _formKey = GlobalKey<FormState>();
+
+  TextEditingController myUserController = TextEditingController();
+  TextEditingController myPasswordController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    myUserController.dispose();
+    myPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<bool> validateUser(String user, String password) async {
+    var resp =
+        await Api.HttpGetForm('/login', {'username': user, 'password': password});
+    if (resp['status'] == 'ok') {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 35),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
-            Icon(Icons.note_add_rounded, size: 100, color: Colors.blueGrey),
-            SizedBox(height: 15),
-            TextField(
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'User',
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 35),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Icon(Icons.note_add_rounded,
+                  size: 100, color: Colors.blueGrey),
+              const SizedBox(height: 15),
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextFormField(
+                      controller: myUserController,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(), labelText: "User"),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your user';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+                    TextFormField(
+                      controller: myPasswordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(), labelText: "Password"),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Processing Data')),
+                          );
+                          if (await validateUser(myUserController.text,
+                              myPasswordController.text)) {
+                            // ignore: use_build_context_synchronously
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MyHomePage(
+                                        email: myUserController.text,
+                                        title: "App de Notas",
+                                      )),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('User or password incorrect')),
+                            );
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Please fill input')),
+                          );
+                        }
+                      },
+                      child: const Text('Submit'),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 15),
-            TextField(
-              textAlign: TextAlign.center,
-              obscureText: true,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Password',
-              ),
-            ),
-            SizedBox(height: 15),
-            ElevatedButton(
-              onPressed: null,
-              child: Text('Login'),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
