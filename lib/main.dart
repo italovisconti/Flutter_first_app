@@ -106,9 +106,8 @@ class _LogInState extends State<LogIn> {
   }
 
   Future<bool> validateUser(String user, String password) async {
-    var resp =
-        await Api.HttpGetForm('/login', {'username': user, 'password': password});
-    if (resp['status'] == 'ok') {
+    var resp = await Api.HttpGetForm('/usuarios/validar', {'username': user, 'password': password});
+    if (resp == 200) {
       return true;
     } else {
       return false;
@@ -164,10 +163,8 @@ class _LogInState extends State<LogIn> {
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Processing Data')),
-                          );
-                          if (await validateUser(myUserController.text,
-                              myPasswordController.text)) {
+                            const SnackBar(content: Text('Processing Data')),);
+                          if (await validateUser(myUserController.text, myPasswordController.text)) {
                             // ignore: use_build_context_synchronously
                             Navigator.push(
                               context,

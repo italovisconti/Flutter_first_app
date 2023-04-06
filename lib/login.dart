@@ -1,4 +1,6 @@
 // ignore: file_names
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -8,7 +10,7 @@ class Api {
 
   static void configureDio() {
     ///Base url
-    _dio.options.baseUrl = 'localhost:5000';
+    _dio.options.baseUrl = 'localhost:5001';
     _dio.options.headers = {
       HttpHeaders.contentTypeHeader: "application/json",
     };
@@ -32,10 +34,10 @@ class Api {
     final formData = FormData.fromMap(data);
 
     try {
-      final resp = await _dio.get(path, data: formData);
-      return resp.data;
+      final resp = await _dio.get(path, data: data);
+      print(resp.statusCode);
+      return resp.statusCode;
     } catch (e) {
-      print(e);
       throw ('Error en el GET');
     }
   }
