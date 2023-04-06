@@ -1,80 +1,37 @@
 // ignore: file_names
 // ignore_for_file: non_constant_identifier_names
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'dart:io';
 
-import 'package:dio/dio.dart';
-
 class Api {
-  static final Dio _dio = Dio();
 
-  static void configureDio() {
-    ///Base url
-    _dio.options.baseUrl = 'localhost:5001';
-    _dio.options.headers = {
-      HttpHeaders.contentTypeHeader: "application/json",
-    };
-  }
+  //faltan los otros metodos, solo usaremos el package http.
 
   static Future httpGet(String path) async {
-    try {
-      final resp = await _dio.get(
-        path,
-      );
-
-      return resp.data;
-    } catch (e) {
-      // ignore: avoid_print
-      print(e);
-      throw ('Error en el GET');
-    }
   }
 
-  static Future HttpGetForm(String path, Map<String, dynamic> data) async {
-    final formData = FormData.fromMap(data);
+  static Future HttpGetForm(String path, Map<String, String> data) async {
+
+    var body = jsonEncode(data); //IMPORTANTE: Convertir a JSON
 
     try {
-      final resp = await _dio.get(path, data: data);
-      print(resp.statusCode);
-      return resp.statusCode;
+      var url = Uri.http('localhost:5001','/usuarios/validar'); //Guardamos la url en una variable, usando Uri.http (ajuro jeje)
+      var response = await http.post(url, body: body, headers: {  //Hacemos la peticion POST con la url, el body y los headers
+        HttpHeaders.contentTypeHeader: "application/json", //IMPORTANTE: Agregar el header con el tipo de contenido (en este caso JSON)
+      });                                               //si no se agrega, el servidor no sabe que tipo de contenido se esta enviando
+      return response.statusCode; //Retornamos el codigo de respuesta (200 = OK / 400 = Bad Request)
     } catch (e) {
       throw ('Error en el GET');
     }
   }
 
   static Future post(String path, Map<String, dynamic> data) async {
-    final formData = FormData.fromMap(data);
-
-    try {
-      final resp = await _dio.post(path, data: formData);
-      return resp.data;
-    } catch (e) {
-      print(e);
-      throw ('Error en el POST');
-    }
   }
 
   static Future put(String path, Map<String, dynamic> data) async {
-    final formData = FormData.fromMap(data);
-
-    try {
-      final resp = await _dio.put(path, data: formData);
-      return resp.data;
-    } catch (e) {
-      print(e);
-      throw ('Error en el PUT');
-    }
   }
 
   static Future delete(String path, Map<String, dynamic> data) async {
-    final formData = FormData.fromMap(data);
-
-    try {
-      final resp = await _dio.delete(path, data: formData);
-      return resp.data;
-    } catch (e) {
-      print(e);
-      throw ('Error en el delete');
-    }
   }
 }

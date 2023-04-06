@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:first_app/login.dart';
 import 'package:flutter/material.dart';
 
@@ -92,21 +94,23 @@ class LogIn extends StatefulWidget {
 }
 
 class _LogInState extends State<LogIn> {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>(); //Para validar el formulario (que no este vacio)
 
-  TextEditingController myUserController = TextEditingController();
+  TextEditingController myUserController = TextEditingController(); //Para obtener el valor del input
   TextEditingController myPasswordController = TextEditingController();
 
   @override
-  void dispose() {
+  void dispose() { //limpia los controladores (hay que hacerlo siempre/ajuro)
     // Clean up the controller when the widget is disposed.
     myUserController.dispose();
     myPasswordController.dispose();
     super.dispose();
   }
 
-  Future<bool> validateUser(String user, String password) async {
-    var resp = await Api.HttpGetForm('/usuarios/validar', {'username': user, 'password': password});
+  Future<bool> validateUser(String user, String password) async { 
+    //Valida el usuario al momento de iniciar sesion
+    //usa la funcion httpGetForm de la clase Api
+    var resp = await Api.HttpGetForm('/usuarios/validar', {'username': user, 'password': password}); //pasamos los parametros en un Map
     if (resp == 200) {
       return true;
     } else {
@@ -135,9 +139,9 @@ class _LogInState extends State<LogIn> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TextFormField(
-                      controller: myUserController,
+                      controller: myUserController, //para obtener el valor del input
                       decoration: const InputDecoration(
-                          border: OutlineInputBorder(), labelText: "User"),
+                                    border: OutlineInputBorder(), labelText: "User"),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your user';
@@ -161,27 +165,27 @@ class _LogInState extends State<LogIn> {
                     const SizedBox(height: 15),
                     ElevatedButton(
                       onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                        if (_formKey.currentState!.validate()) { //cuando presionamos el boton, valida el formulario
+                          ScaffoldMessenger.of(context).showSnackBar( //muestra un mensaje de procesando (la barrita de abajo)
                             const SnackBar(content: Text('Processing Data')),);
                           if (await validateUser(myUserController.text, myPasswordController.text)) {
-                            // ignore: use_build_context_synchronously
+                            //si el usuario es valido, redirige a la pagina principal
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => MyHomePage(
+                                  builder: (context) => MyHomePage( //redirige a la pagina principal
                                         email: myUserController.text,
                                         title: "App de Notas",
                                       )),
                             );
-                          } else {
+                          } else { //si no es valido, muestra un mensaje de error
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                   content: Text('User or password incorrect')),
                             );
                           }
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar( //mensaje de error del formularo vacio
                             const SnackBar(content: Text('Please fill input')),
                           );
                         }
