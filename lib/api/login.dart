@@ -12,11 +12,9 @@ class Api {
   }
 
   static Future HttpGetForm(String path, Map<String, String> data) async {
-
     var body = jsonEncode(data); //IMPORTANTE: Convertir a JSON
-
     try {
-      var url = Uri.http('localhost:5001','/usuarios/validar'); //Guardamos la url en una variable, usando Uri.http (ajuro jeje)
+      var url = Uri.http('localhost:8888','/users/validar'); //Guardamos la url en una variable, usando Uri.http (ajuro jeje)
       var response = await http.post(url, body: body, headers: {  //Hacemos la peticion POST con la url, el body y los headers
         HttpHeaders.contentTypeHeader: "application/json", //IMPORTANTE: Agregar el header con el tipo de contenido (en este caso JSON)
       });                                               //si no se agrega, el servidor no sabe que tipo de contenido se esta enviando
